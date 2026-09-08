@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Snake Game 🇸🇾🐍</title>
+    <title>Snake Game 🐍</title>
 
     <style>
-
         * {
             box-sizing: border-box;
         }
@@ -26,7 +25,7 @@
         }
 
         /* =========================
-           START SCREEN
+           START SCREEN - GERMANY 🇩🇪
         ========================= */
 
         #startScreen {
@@ -39,12 +38,12 @@
                     rgba(0,0,0,0.35)
                 ),
                 linear-gradient(
-                    #ce1126 0%,
-                    #ce1126 33%,
-                    white 33%,
-                    white 66%,
-                    #007a3d 66%,
-                    #007a3d 100%
+                    #000000 0%,
+                    #000000 33.3%,
+                    #dd0000 33.3%,
+                    #dd0000 66.6%,
+                    #ffce00 66.6%,
+                    #ffce00 100%
                 );
         }
 
@@ -53,11 +52,10 @@
             display: inline-block;
             padding: 30px;
             border-radius: 20px;
-            min-width: 300px;
         }
 
         #startBox h1 {
-            font-size: 42px;
+            font-size: 40px;
         }
 
         input {
@@ -114,27 +112,25 @@
 
         #gameOverScreen {
             min-height: 100vh;
+            padding-top: 140px;
 
             background:
-                linear-gradient(
-                    rgba(120,0,0,0.7),
-                    rgba(0,0,0,0.9)
+                radial-gradient(
+                    circle,
+                    #8b0000,
+                    #150000
                 );
-
-            padding-top: 150px;
         }
 
         #gameOverScreen h1 {
-            font-size: 65px;
+            font-size: 60px;
         }
 
         #finalScore {
             font-size: 25px;
         }
-
     </style>
 </head>
-
 
 <body>
 
@@ -147,7 +143,7 @@
 
     <div id="startBox">
 
-        <h1>🇸🇾 🐍 SNAKE GAME 🐍 🇸🇾</h1>
+        <h1>🇩🇪 🐍 SNAKE GAME 🐍 🇩🇪</h1>
 
         <p>Welcome to the game!</p>
 
@@ -205,13 +201,11 @@
 
     </div>
 
-
     <canvas
         id="gameCanvas"
         width="800"
         height="600">
     </canvas>
-
 
     <div class="controls">
 
@@ -222,7 +216,6 @@
         </div>
 
         <div>
-
             <button onclick="changeDirection('left')">
                 ⬅️
             </button>
@@ -234,7 +227,6 @@
             <button onclick="changeDirection('right')">
                 ➡️
             </button>
-
         </div>
 
     </div>
@@ -276,6 +268,8 @@ let snake = [];
 
 let apple = {};
 
+let watermelon = {};
+
 let direction = "right";
 
 let nextDirection = "right";
@@ -292,10 +286,10 @@ let playerAge = "";
 
 
 /* =========================
-   SOUND SYSTEM
+   SOUND
 ========================= */
 
-function playEatSound() {
+function playSound(frequency, duration) {
 
     const audio =
         new (window.AudioContext ||
@@ -311,68 +305,31 @@ function playEatSound() {
 
     gain.connect(audio.destination);
 
-    oscillator.frequency.value = 600;
+    oscillator.frequency.value =
+        frequency;
 
     oscillator.type = "sine";
 
     gain.gain.setValueAtTime(
-        0.2,
+        0.25,
         audio.currentTime
     );
 
     gain.gain.exponentialRampToValueAtTime(
         0.01,
-        audio.currentTime + 0.2
+        audio.currentTime + duration
     );
 
     oscillator.start();
 
     oscillator.stop(
-        audio.currentTime + 0.2
-    );
-}
-
-
-function playDeathSound() {
-
-    const audio =
-        new (window.AudioContext ||
-        window.webkitAudioContext)();
-
-    const oscillator =
-        audio.createOscillator();
-
-    const gain =
-        audio.createGain();
-
-    oscillator.connect(gain);
-
-    gain.connect(audio.destination);
-
-    oscillator.frequency.value = 150;
-
-    oscillator.type = "sawtooth";
-
-    gain.gain.setValueAtTime(
-        0.3,
-        audio.currentTime
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-        0.01,
-        audio.currentTime + 0.7
-    );
-
-    oscillator.start();
-
-    oscillator.stop(
-        audio.currentTime + 0.7
+        audio.currentTime + duration
     );
 }
 
 
 /* =========================
-   START GAME
+   START
 ========================= */
 
 function startGame() {
@@ -405,7 +362,6 @@ function startGame() {
         "showName"
     ).innerText = playerName;
 
-
     document.getElementById(
         "showAge"
     ).innerText = playerAge;
@@ -413,11 +369,6 @@ function startGame() {
 
     document.getElementById(
         "startScreen"
-    ).classList.remove("active");
-
-
-    document.getElementById(
-        "gameOverScreen"
     ).classList.remove("active");
 
 
@@ -442,11 +393,8 @@ function restartGame() {
     snake = [
 
         {x:400, y:300},
-
         {x:380, y:300},
-
         {x:360, y:300},
-
         {x:340, y:300}
 
     ];
@@ -458,12 +406,10 @@ function restartGame() {
 
     score = 0;
 
+
     document.getElementById(
         "score"
     ).innerText = score;
-
-
-    createApple();
 
 
     document.getElementById(
@@ -476,8 +422,12 @@ function restartGame() {
     ).classList.add("active");
 
 
-    gameRunning = true;
+    createApple();
 
+    createWatermelon();
+
+
+    gameRunning = true;
 
     draw();
 
@@ -491,13 +441,12 @@ function restartGame() {
 
 
 /* =========================
-   APPLE
+   CREATE APPLE 🍎
 ========================= */
 
 function createApple() {
 
     let newApple;
-
 
     do {
 
@@ -506,12 +455,12 @@ function createApple() {
             x:
                 Math.floor(
                     Math.random() * 39
-                ) * 20 + 10,
+                ) * 20 + 20,
 
             y:
                 Math.floor(
                     Math.random() * 29
-                ) * 20 + 10
+                ) * 20 + 20
         };
 
     } while (
@@ -528,7 +477,51 @@ function createApple() {
 
 
 /* =========================
-   UPDATE
+   CREATE WATERMELON 🍉
+========================= */
+
+function createWatermelon() {
+
+    let newWatermelon;
+
+    do {
+
+        newWatermelon = {
+
+            x:
+                Math.floor(
+                    Math.random() * 39
+                ) * 20 + 20,
+
+            y:
+                Math.floor(
+                    Math.random() * 29
+                ) * 20 + 20
+        };
+
+    } while (
+
+        snake.some(
+            part =>
+                part.x === newWatermelon.x &&
+                part.y === newWatermelon.y
+        )
+
+        ||
+
+        (
+            newWatermelon.x === apple.x &&
+            newWatermelon.y === apple.y
+        )
+    );
+
+
+    watermelon = newWatermelon;
+}
+
+
+/* =========================
+   GAME UPDATE
 ========================= */
 
 function update() {
@@ -543,7 +536,6 @@ function update() {
     let head = {
 
         x: snake[0].x,
-
         y: snake[0].y
 
     };
@@ -565,10 +557,10 @@ function update() {
     /* WALL */
 
     if (
-        head.x < 10 ||
-        head.x > 790 ||
-        head.y < 10 ||
-        head.y > 590
+        head.x < 20 ||
+        head.x > 780 ||
+        head.y < 20 ||
+        head.y > 580
     ) {
 
         endGame();
@@ -577,7 +569,7 @@ function update() {
     }
 
 
-    /* BODY */
+    /* HIT YOURSELF */
 
     for (let part of snake) {
 
@@ -598,6 +590,7 @@ function update() {
 
     /* =========================
        EAT APPLE 🍎
+       + ONE BODY PART
     ========================= */
 
     if (
@@ -607,28 +600,70 @@ function update() {
 
         score++;
 
+        document.getElementById(
+            "score"
+        ).innerText = score;
+
+
+        // صوت التفاحة
+
+        playSound(700, 0.15);
+
+
+        // تفاحة جديدة
+
+        createApple();
+
+
+        // لا نحذف الذيل
+        // لذلك الحية تكبر وحدة
+
+
+    }
+
+    /* =========================
+       EAT WATERMELON 🍉
+       + TWO BODY PARTS
+    ========================= */
+
+    else if (
+        head.x === watermelon.x &&
+        head.y === watermelon.y
+    ) {
+
+        score += 2;
 
         document.getElementById(
             "score"
         ).innerText = score;
 
 
-        // 🔊 صوت الأكل
+        // صوت البطيخ
 
-        playEatSound();
-
-
-        // 🍎 تفاحة جديدة
-
-        createApple();
+        playSound(400, 0.3);
 
 
-        // 🐍 لا نحذف الذيل
-        // لذلك الحية تكبر
+        // بطيخ جديد
+
+        createWatermelon();
 
 
-    } else {
+        /*
+          لا نحذف الذيل الآن،
+          ونضيف جزء إضافي
+          حتى تكبر مرتين.
+        */
 
+        snake.push({
+            x: snake[snake.length - 1].x,
+            y: snake[snake.length - 1].y
+        });
+
+    }
+
+    else {
+
+        // لا أكل
         snake.pop();
     }
 
@@ -643,6 +678,8 @@ function update() {
 
 function draw() {
 
+    /* BACKGROUND */
+
     ctx.fillStyle = "#31552b";
 
     ctx.fillRect(
@@ -653,7 +690,9 @@ function draw() {
     );
 
 
-    /* APPLE */
+    /* =========================
+       APPLE 🍎
+    ========================= */
 
     ctx.fillStyle = "rgba(0,0,0,0.3)";
 
@@ -661,8 +700,8 @@ function draw() {
 
     ctx.ellipse(
         apple.x,
-        apple.y + 12,
-        15,
+        apple.y + 13,
+        16,
         6,
         0,
         0,
@@ -679,7 +718,7 @@ function draw() {
     ctx.arc(
         apple.x - 7,
         apple.y,
-        12,
+        13,
         0,
         Math.PI * 2
     );
@@ -687,7 +726,7 @@ function draw() {
     ctx.arc(
         apple.x + 7,
         apple.y,
-        12,
+        13,
         0,
         Math.PI * 2
     );
@@ -695,7 +734,7 @@ function draw() {
     ctx.fill();
 
 
-    /* APPLE SHINE */
+    /* Apple shine */
 
     ctx.fillStyle = "#ffaaaa";
 
@@ -712,7 +751,7 @@ function draw() {
     ctx.fill();
 
 
-    /* APPLE STEM */
+    /* Apple stem */
 
     ctx.strokeStyle = "#542d16";
 
@@ -733,7 +772,60 @@ function draw() {
     ctx.stroke();
 
 
-    /* SNAKE */
+    /* =========================
+       WATERMELON 🍉
+    ========================= */
+
+    ctx.fillStyle = "#087f23";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        watermelon.x,
+        watermelon.y,
+        17,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /* Watermelon stripes */
+
+    ctx.strokeStyle = "#55c957";
+
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        watermelon.x,
+        watermelon.y,
+        12,
+        -1,
+        1
+    );
+
+    ctx.stroke();
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        watermelon.x,
+        watermelon.y,
+        7,
+        -1,
+        1
+    );
+
+    ctx.stroke();
+
+
+    /* =========================
+       SNAKE 🐍
+    ========================= */
 
     for (
         let i = snake.length - 1;
@@ -744,19 +836,18 @@ function draw() {
         let part = snake[i];
 
 
-        ctx.beginPath();
-
-
         if (i === 0) {
 
             /* HEAD */
 
             ctx.fillStyle = "#43d65c";
 
+            ctx.beginPath();
+
             ctx.arc(
                 part.x,
                 part.y,
-                17,
+                18,
                 0,
                 Math.PI * 2
             );
@@ -764,7 +855,7 @@ function draw() {
             ctx.fill();
 
 
-            /* EYES */
+            /* Eyes */
 
             ctx.fillStyle = "white";
 
@@ -822,10 +913,12 @@ function draw() {
                 : "#45c95b";
 
 
+            ctx.beginPath();
+
             ctx.arc(
                 part.x,
                 part.y,
-                15,
+                16,
                 0,
                 Math.PI * 2
             );
@@ -878,6 +971,8 @@ function changeDirection(newDirection) {
 }
 
 
+/* KEYBOARD */
+
 document.addEventListener(
     "keydown",
     function(event) {
@@ -909,9 +1004,9 @@ function endGame() {
     clearInterval(gameLoop);
 
 
-    // 🔊 صوت الموت
+    // صوت الموت
 
-    playDeathSound();
+    playSound(120, 0.7);
 
 
     document.getElementById(
