@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Real Snake Game 🐍</title>
+    <title>Snake Game 🇸🇾🐍</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            background: #111;
-            color: white;
             font-family: Arial, sans-serif;
             text-align: center;
-        }
-
-        h1 {
-            margin: 20px 0 10px;
+            color: white;
+            background: #111;
         }
 
         .screen {
@@ -28,17 +25,52 @@
             display: block;
         }
 
+        /* =========================
+           START SCREEN
+        ========================= */
+
+        #startScreen {
+            min-height: 100vh;
+            padding-top: 80px;
+
+            background:
+                linear-gradient(
+                    rgba(0,0,0,0.35),
+                    rgba(0,0,0,0.35)
+                ),
+                linear-gradient(
+                    #ce1126 0%,
+                    #ce1126 33%,
+                    white 33%,
+                    white 66%,
+                    #007a3d 66%,
+                    #007a3d 100%
+                );
+        }
+
+        #startBox {
+            background: rgba(0,0,0,0.75);
+            display: inline-block;
+            padding: 30px;
+            border-radius: 20px;
+            min-width: 300px;
+        }
+
+        #startBox h1 {
+            font-size: 42px;
+        }
+
         input {
             padding: 13px;
             margin: 8px;
             font-size: 18px;
-            border-radius: 8px;
             border: none;
-            width: 230px;
+            border-radius: 8px;
+            width: 240px;
         }
 
         button {
-            padding: 12px 25px;
+            padding: 13px 25px;
             margin: 8px;
             font-size: 18px;
             border: none;
@@ -46,11 +78,22 @@
             cursor: pointer;
         }
 
+        /* =========================
+           GAME
+        ========================= */
+
+        #gameScreen {
+            min-height: 100vh;
+            padding-top: 10px;
+        }
+
         #gameCanvas {
-            background: #294b24;
+            background: #31552b;
             border: 5px solid white;
-            width: min(90vw, 700px);
+
+            width: min(94vw, 800px);
             height: min(70vh, 600px);
+
             touch-action: none;
         }
 
@@ -59,88 +102,162 @@
             margin: 10px;
         }
 
-        #gameOver {
-            font-size: 28px;
-            margin-top: 20px;
-        }
-
         .controls button {
             width: 65px;
             height: 55px;
             padding: 0;
         }
+
+        /* =========================
+           GAME OVER
+        ========================= */
+
+        #gameOverScreen {
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    rgba(120,0,0,0.7),
+                    rgba(0,0,0,0.9)
+                );
+
+            padding-top: 150px;
+        }
+
+        #gameOverScreen h1 {
+            font-size: 65px;
+        }
+
+        #finalScore {
+            font-size: 25px;
+        }
+
     </style>
 </head>
 
+
 <body>
 
-<!-- START SCREEN -->
+
+<!-- =========================
+     START
+========================= -->
 
 <div id="startScreen" class="screen active">
 
-    <h1>🐍 REAL SNAKE GAME 🐍</h1>
+    <div id="startBox">
 
-    <p>Enter your information</p>
+        <h1>🇸🇾 🐍 SNAKE GAME 🐍 🇸🇾</h1>
 
-    <input
-        id="playerName"
-        type="text"
-        placeholder="Your name"
-    >
+        <p>Welcome to the game!</p>
 
-    <br>
+        <input
+            id="playerName"
+            type="text"
+            placeholder="Your name"
+        >
 
-    <input
-        id="playerAge"
-        type="number"
-        placeholder="Your age"
-    >
+        <br>
 
-    <br>
+        <input
+            id="playerAge"
+            type="number"
+            placeholder="Your age"
+        >
 
-    <button onclick="startGame()">
-        🎮 START GAME
-    </button>
+        <br>
+
+        <button onclick="startGame()">
+            🎮 START GAME
+        </button>
+
+        <button onclick="startGame()">
+            🔎 FIND NEW GAME
+        </button>
+
+    </div>
 
 </div>
 
 
-<!-- GAME SCREEN -->
+<!-- =========================
+     GAME
+========================= -->
 
 <div id="gameScreen" class="screen">
 
     <h1>🐍 Snake</h1>
 
     <div id="info">
-        Player: <span id="showName"></span>
+
+        Player:
+        <span id="showName"></span>
+
         |
-        Age: <span id="showAge"></span>
+
+        Age:
+        <span id="showAge"></span>
+
         |
-        Score: <span id="score">0</span>
+
+        🍎 Score:
+        <span id="score">0</span>
+
     </div>
 
-    <canvas id="gameCanvas" width="700" height="600"></canvas>
+
+    <canvas
+        id="gameCanvas"
+        width="800"
+        height="600">
+    </canvas>
+
 
     <div class="controls">
 
         <div>
-            <button onclick="changeDirection('up')">⬆️</button>
+            <button onclick="changeDirection('up')">
+                ⬆️
+            </button>
         </div>
 
         <div>
-            <button onclick="changeDirection('left')">⬅️</button>
-            <button onclick="changeDirection('down')">⬇️</button>
-            <button onclick="changeDirection('right')">➡️</button>
+
+            <button onclick="changeDirection('left')">
+                ⬅️
+            </button>
+
+            <button onclick="changeDirection('down')">
+                ⬇️
+            </button>
+
+            <button onclick="changeDirection('right')">
+                ➡️
+            </button>
+
         </div>
 
     </div>
 
-    <div id="gameOver"></div>
+</div>
 
-    <button id="restartButton"
-            onclick="restartGame()"
-            style="display:none;">
+
+<!-- =========================
+     GAME OVER
+========================= -->
+
+<div id="gameOverScreen" class="screen">
+
+    <h1>💀 GAME OVER 💀</h1>
+
+    <p id="finalScore"></p>
+
+    <button onclick="restartGame()">
         🔄 RESTART
+    </button>
+
+    <button onclick="goHome()">
+        🏠 HOME
     </button>
 
 </div>
@@ -148,108 +265,287 @@
 
 <script>
 
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const canvas =
+    document.getElementById("gameCanvas");
 
-let snake;
-let apple;
-let direction;
-let nextDirection;
+const ctx =
+    canvas.getContext("2d");
+
+
+let snake = [];
+
+let apple = {};
+
+let direction = "right";
+
+let nextDirection = "right";
+
 let score = 0;
-let gameRunning = false;
+
 let gameLoop;
 
+let gameRunning = false;
+
 let playerName = "";
+
 let playerAge = "";
 
+
+/* =========================
+   SOUND SYSTEM
+========================= */
+
+function playEatSound() {
+
+    const audio =
+        new (window.AudioContext ||
+        window.webkitAudioContext)();
+
+    const oscillator =
+        audio.createOscillator();
+
+    const gain =
+        audio.createGain();
+
+    oscillator.connect(gain);
+
+    gain.connect(audio.destination);
+
+    oscillator.frequency.value = 600;
+
+    oscillator.type = "sine";
+
+    gain.gain.setValueAtTime(
+        0.2,
+        audio.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.01,
+        audio.currentTime + 0.2
+    );
+
+    oscillator.start();
+
+    oscillator.stop(
+        audio.currentTime + 0.2
+    );
+}
+
+
+function playDeathSound() {
+
+    const audio =
+        new (window.AudioContext ||
+        window.webkitAudioContext)();
+
+    const oscillator =
+        audio.createOscillator();
+
+    const gain =
+        audio.createGain();
+
+    oscillator.connect(gain);
+
+    gain.connect(audio.destination);
+
+    oscillator.frequency.value = 150;
+
+    oscillator.type = "sawtooth";
+
+    gain.gain.setValueAtTime(
+        0.3,
+        audio.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.01,
+        audio.currentTime + 0.7
+    );
+
+    oscillator.start();
+
+    oscillator.stop(
+        audio.currentTime + 0.7
+    );
+}
+
+
+/* =========================
+   START GAME
+========================= */
 
 function startGame() {
 
     playerName =
-        document.getElementById("playerName").value;
+        document.getElementById(
+            "playerName"
+        ).value.trim();
 
     playerAge =
-        document.getElementById("playerAge").value;
+        document.getElementById(
+            "playerAge"
+        ).value.trim();
 
-    if (playerName === "" || playerAge === "") {
-        alert("Please enter your name and age!");
+
+    if (
+        playerName === "" ||
+        playerAge === ""
+    ) {
+
+        alert(
+            "Please enter your name and age!"
+        );
+
         return;
     }
 
-    document.getElementById("showName").innerText =
-        playerName;
 
-    document.getElementById("showAge").innerText =
-        playerAge;
+    document.getElementById(
+        "showName"
+    ).innerText = playerName;
 
-    document.getElementById("startScreen")
-        .classList.remove("active");
 
-    document.getElementById("gameScreen")
-        .classList.add("active");
+    document.getElementById(
+        "showAge"
+    ).innerText = playerAge;
+
+
+    document.getElementById(
+        "startScreen"
+    ).classList.remove("active");
+
+
+    document.getElementById(
+        "gameOverScreen"
+    ).classList.remove("active");
+
+
+    document.getElementById(
+        "gameScreen"
+    ).classList.add("active");
+
 
     restartGame();
 }
 
 
+/* =========================
+   RESTART
+========================= */
+
 function restartGame() {
 
     clearInterval(gameLoop);
 
+
     snake = [
-        {x: 350, y: 300},
-        {x: 330, y: 300},
-        {x: 310, y: 300},
-        {x: 290, y: 300}
+
+        {x:400, y:300},
+
+        {x:380, y:300},
+
+        {x:360, y:300},
+
+        {x:340, y:300}
+
     ];
 
+
     direction = "right";
+
     nextDirection = "right";
 
     score = 0;
 
-    document.getElementById("score").innerText =
-        score;
+    document.getElementById(
+        "score"
+    ).innerText = score;
 
-    document.getElementById("gameOver").innerText = "";
-
-    document.getElementById("restartButton").style.display =
-        "none";
 
     createApple();
 
+
+    document.getElementById(
+        "gameOverScreen"
+    ).classList.remove("active");
+
+
+    document.getElementById(
+        "gameScreen"
+    ).classList.add("active");
+
+
     gameRunning = true;
+
 
     draw();
 
-    gameLoop = setInterval(update, 100);
+
+    gameLoop =
+        setInterval(
+            update,
+            100
+        );
 }
 
+
+/* =========================
+   APPLE
+========================= */
 
 function createApple() {
 
-    apple = {
+    let newApple;
 
-        x: Math.floor(
-            Math.random() * 34
-        ) * 20 + 10,
 
-        y: Math.floor(
-            Math.random() * 29
-        ) * 20 + 10
-    };
+    do {
+
+        newApple = {
+
+            x:
+                Math.floor(
+                    Math.random() * 39
+                ) * 20 + 10,
+
+            y:
+                Math.floor(
+                    Math.random() * 29
+                ) * 20 + 10
+        };
+
+    } while (
+        snake.some(
+            part =>
+                part.x === newApple.x &&
+                part.y === newApple.y
+        )
+    );
+
+
+    apple = newApple;
 }
 
 
+/* =========================
+   UPDATE
+========================= */
+
 function update() {
 
-    if (!gameRunning) return;
+    if (!gameRunning)
+        return;
+
 
     direction = nextDirection;
 
+
     let head = {
+
         x: snake[0].x,
+
         y: snake[0].y
+
     };
 
 
@@ -266,20 +562,22 @@ function update() {
         head.x += 20;
 
 
-    // Wall collision
+    /* WALL */
 
     if (
         head.x < 10 ||
-        head.x > 670 ||
+        head.x > 790 ||
         head.y < 10 ||
-        head.y > 570
+        head.y > 590
     ) {
+
         endGame();
+
         return;
     }
 
 
-    // Snake collision
+    /* BODY */
 
     for (let part of snake) {
 
@@ -287,7 +585,9 @@ function update() {
             head.x === part.x &&
             head.y === part.y
         ) {
+
             endGame();
+
             return;
         }
     }
@@ -296,7 +596,9 @@ function update() {
     snake.unshift(head);
 
 
-    // Apple
+    /* =========================
+       EAT APPLE 🍎
+    ========================= */
 
     if (
         head.x === apple.x &&
@@ -305,10 +607,25 @@ function update() {
 
         score++;
 
-        document.getElementById("score").innerText =
-            score;
+
+        document.getElementById(
+            "score"
+        ).innerText = score;
+
+
+        // 🔊 صوت الأكل
+
+        playEatSound();
+
+
+        // 🍎 تفاحة جديدة
 
         createApple();
+
+
+        // 🐍 لا نحذف الذيل
+        // لذلك الحية تكبر
+
 
     } else {
 
@@ -320,11 +637,13 @@ function update() {
 }
 
 
+/* =========================
+   DRAW
+========================= */
+
 function draw() {
 
-    // Grass background
-
-    ctx.fillStyle = "#294b24";
+    ctx.fillStyle = "#31552b";
 
     ctx.fillRect(
         0,
@@ -334,30 +653,17 @@ function draw() {
     );
 
 
-    // Small grass details
-
-    ctx.fillStyle = "#315d2c";
-
-    for (let x = 0; x < canvas.width; x += 40) {
-
-        for (let y = 0; y < canvas.height; y += 40) {
-
-            ctx.fillRect(x, y, 2, 2);
-        }
-    }
-
-
-    // Apple shadow
-
-    ctx.beginPath();
+    /* APPLE */
 
     ctx.fillStyle = "rgba(0,0,0,0.3)";
 
+    ctx.beginPath();
+
     ctx.ellipse(
         apple.x,
-        apple.y + 9,
-        13,
-        5,
+        apple.y + 12,
+        15,
+        6,
         0,
         0,
         Math.PI * 2
@@ -366,24 +672,22 @@ function draw() {
     ctx.fill();
 
 
-    // Apple
+    ctx.fillStyle = "#e31b23";
 
     ctx.beginPath();
 
-    ctx.fillStyle = "#d71919";
-
     ctx.arc(
-        apple.x - 5,
+        apple.x - 7,
         apple.y,
-        10,
+        12,
         0,
         Math.PI * 2
     );
 
     ctx.arc(
-        apple.x + 5,
+        apple.x + 7,
         apple.y,
-        10,
+        12,
         0,
         Math.PI * 2
     );
@@ -391,16 +695,16 @@ function draw() {
     ctx.fill();
 
 
-    // Apple shine
+    /* APPLE SHINE */
+
+    ctx.fillStyle = "#ffaaaa";
 
     ctx.beginPath();
 
-    ctx.fillStyle = "#ff7777";
-
     ctx.arc(
-        apple.x - 5,
-        apple.y - 5,
-        3,
+        apple.x - 7,
+        apple.y - 6,
+        4,
         0,
         Math.PI * 2
     );
@@ -408,44 +712,51 @@ function draw() {
     ctx.fill();
 
 
-    // Apple stem
+    /* APPLE STEM */
 
     ctx.strokeStyle = "#542d16";
+
     ctx.lineWidth = 4;
 
     ctx.beginPath();
 
     ctx.moveTo(
         apple.x,
-        apple.y - 9
+        apple.y - 10
     );
 
     ctx.lineTo(
-        apple.x + 3,
-        apple.y - 18
+        apple.x + 5,
+        apple.y - 22
     );
 
     ctx.stroke();
 
 
-    // Snake
+    /* SNAKE */
 
-    for (let i = snake.length - 1; i >= 0; i--) {
+    for (
+        let i = snake.length - 1;
+        i >= 0;
+        i--
+    ) {
 
         let part = snake[i];
 
+
         ctx.beginPath();
+
 
         if (i === 0) {
 
-            // Snake head
+            /* HEAD */
 
-            ctx.fillStyle = "#3fc45b";
+            ctx.fillStyle = "#43d65c";
 
             ctx.arc(
                 part.x,
                 part.y,
-                14,
+                17,
                 0,
                 Math.PI * 2
             );
@@ -453,24 +764,24 @@ function draw() {
             ctx.fill();
 
 
-            // Eyes
+            /* EYES */
 
             ctx.fillStyle = "white";
 
             ctx.beginPath();
 
             ctx.arc(
-                part.x - 6,
-                part.y - 6,
-                4,
+                part.x - 7,
+                part.y - 7,
+                5,
                 0,
                 Math.PI * 2
             );
 
             ctx.arc(
-                part.x + 6,
-                part.y - 6,
-                4,
+                part.x + 7,
+                part.y - 7,
+                5,
                 0,
                 Math.PI * 2
             );
@@ -483,16 +794,16 @@ function draw() {
             ctx.beginPath();
 
             ctx.arc(
-                part.x - 6,
-                part.y - 6,
+                part.x - 7,
+                part.y - 7,
                 2,
                 0,
                 Math.PI * 2
             );
 
             ctx.arc(
-                part.x + 6,
-                part.y - 6,
+                part.x + 7,
+                part.y - 7,
                 2,
                 0,
                 Math.PI * 2
@@ -500,58 +811,70 @@ function draw() {
 
             ctx.fill();
 
+
         } else {
 
-            // Snake body
+            /* BODY */
 
             ctx.fillStyle =
                 i % 2 === 0
-                ? "#36a94a"
-                : "#49c95c";
+                ? "#2fa84b"
+                : "#45c95b";
+
 
             ctx.arc(
                 part.x,
                 part.y,
-                13,
+                15,
                 0,
                 Math.PI * 2
             );
 
             ctx.fill();
+
+
+            ctx.strokeStyle = "#176b2c";
+
+            ctx.lineWidth = 2;
+
+            ctx.stroke();
         }
     }
 }
 
+
+/* =========================
+   CONTROLS
+========================= */
 
 function changeDirection(newDirection) {
 
     if (
         newDirection === "up" &&
         direction !== "down"
-    ) {
+    )
         nextDirection = "up";
-    }
+
 
     if (
         newDirection === "down" &&
         direction !== "up"
-    ) {
+    )
         nextDirection = "down";
-    }
+
 
     if (
         newDirection === "left" &&
         direction !== "right"
-    ) {
+    )
         nextDirection = "left";
-    }
+
 
     if (
         newDirection === "right" &&
         direction !== "left"
-    ) {
+    )
         nextDirection = "right";
-    }
 }
 
 
@@ -570,9 +893,14 @@ document.addEventListener(
 
         if (event.key === "ArrowRight")
             changeDirection("right");
+
     }
 );
 
+
+/* =========================
+   GAME OVER
+========================= */
 
 function endGame() {
 
@@ -580,11 +908,55 @@ function endGame() {
 
     clearInterval(gameLoop);
 
-    document.getElementById("gameOver").innerText =
-        "💀 GAME OVER!";
 
-    document.getElementById("restartButton").style.display =
-        "inline-block";
+    // 🔊 صوت الموت
+
+    playDeathSound();
+
+
+    document.getElementById(
+        "finalScore"
+    ).innerText =
+        playerName +
+        ", your score was: " +
+        score;
+
+
+    document.getElementById(
+        "gameScreen"
+    ).classList.remove("active");
+
+
+    document.getElementById(
+        "gameOverScreen"
+    ).classList.add("active");
+}
+
+
+/* =========================
+   HOME
+========================= */
+
+function goHome() {
+
+    clearInterval(gameLoop);
+
+    gameRunning = false;
+
+
+    document.getElementById(
+        "gameOverScreen"
+    ).classList.remove("active");
+
+
+    document.getElementById(
+        "gameScreen"
+    ).classList.remove("active");
+
+
+    document.getElementById(
+        "startScreen"
+    ).classList.add("active");
 }
 
 </script>
