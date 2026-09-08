@@ -1,51 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Snake Game 🐍</title>
+    <title>Real Snake Game 🐍</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             background: #111;
             color: white;
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             text-align: center;
         }
 
         h1 {
-            margin-top: 30px;
+            margin: 20px 0 10px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        input {
+            padding: 13px;
+            margin: 8px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: none;
+            width: 230px;
         }
 
         button {
             padding: 12px 25px;
-            margin: 10px;
+            margin: 8px;
             font-size: 18px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
         }
 
-        #game {
-            display: none;
+        #gameCanvas {
+            background: #294b24;
+            border: 5px solid white;
+            width: min(90vw, 700px);
+            height: min(70vh, 600px);
+            touch-action: none;
         }
 
-        canvas {
-            background: black;
-            border: 3px solid white;
-            margin-top: 15px;
+        #info {
+            font-size: 20px;
+            margin: 10px;
         }
 
-        #score {
-            font-size: 22px;
-        }
-
-        .controls {
-            margin-top: 15px;
+        #gameOver {
+            font-size: 28px;
+            margin-top: 20px;
         }
 
         .controls button {
-            width: 60px;
-            height: 50px;
+            width: 65px;
+            height: 55px;
             padding: 0;
         }
     </style>
@@ -53,112 +74,178 @@
 
 <body>
 
-    <div id="menu">
+<!-- START SCREEN -->
 
-        <h1>🐍 Snake Game</h1>
+<div id="startScreen" class="screen active">
 
-        <p>Welcome to the Snake Game!</p>
+    <h1>🐍 REAL SNAKE GAME 🐍</h1>
 
-        <button onclick="startGame()">
-            🎮 Start Game
-        </button>
+    <p>Enter your information</p>
 
-        <button onclick="newGame()">
-            🆕 Find New Game
-        </button>
+    <input
+        id="playerName"
+        type="text"
+        placeholder="Your name"
+    >
+
+    <br>
+
+    <input
+        id="playerAge"
+        type="number"
+        placeholder="Your age"
+    >
+
+    <br>
+
+    <button onclick="startGame()">
+        🎮 START GAME
+    </button>
+
+</div>
+
+
+<!-- GAME SCREEN -->
+
+<div id="gameScreen" class="screen">
+
+    <h1>🐍 Snake</h1>
+
+    <div id="info">
+        Player: <span id="showName"></span>
+        |
+        Age: <span id="showAge"></span>
+        |
+        Score: <span id="score">0</span>
+    </div>
+
+    <canvas id="gameCanvas" width="700" height="600"></canvas>
+
+    <div class="controls">
+
+        <div>
+            <button onclick="changeDirection('up')">⬆️</button>
+        </div>
+
+        <div>
+            <button onclick="changeDirection('left')">⬅️</button>
+            <button onclick="changeDirection('down')">⬇️</button>
+            <button onclick="changeDirection('right')">➡️</button>
+        </div>
 
     </div>
 
+    <div id="gameOver"></div>
 
-    <div id="game">
+    <button id="restartButton"
+            onclick="restartGame()"
+            style="display:none;">
+        🔄 RESTART
+    </button>
 
-        <h1>🐍 Snake</h1>
-
-        <div id="score">
-            Score: 0
-        </div>
-
-        <canvas id="canvas" width="300" height="300"></canvas>
-
-        <div class="controls">
-
-            <div>
-                <button onclick="changeDirection('up')">⬆️</button>
-            </div>
-
-            <div>
-                <button onclick="changeDirection('left')">⬅️</button>
-
-                <button onclick="changeDirection('down')">⬇️</button>
-
-                <button onclick="changeDirection('right')">➡️</button>
-            </div>
-
-        </div>
-
-        <br>
-
-        <button onclick="backToMenu()">
-            🏠 Menu
-        </button>
-
-    </div>
+</div>
 
 
 <script>
 
-let canvas = document.getElementById("canvas");
-let ctx = canvas.getContext("2d");
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
 let snake;
-let food;
+let apple;
 let direction;
-let score;
+let nextDirection;
+let score = 0;
+let gameRunning = false;
 let gameLoop;
+
+let playerName = "";
+let playerAge = "";
 
 
 function startGame() {
 
-    document.getElementById("menu").style.display = "none";
-    document.getElementById("game").style.display = "block";
+    playerName =
+        document.getElementById("playerName").value;
 
-    resetGame();
+    playerAge =
+        document.getElementById("playerAge").value;
+
+    if (playerName === "" || playerAge === "") {
+        alert("Please enter your name and age!");
+        return;
+    }
+
+    document.getElementById("showName").innerText =
+        playerName;
+
+    document.getElementById("showAge").innerText =
+        playerAge;
+
+    document.getElementById("startScreen")
+        .classList.remove("active");
+
+    document.getElementById("gameScreen")
+        .classList.add("active");
+
+    restartGame();
 }
 
 
-function newGame() {
+function restartGame() {
 
-    document.getElementById("menu").style.display = "none";
-    document.getElementById("game").style.display = "block";
-
-    resetGame();
-}
-
-
-function resetGame() {
+    clearInterval(gameLoop);
 
     snake = [
-        {x: 150, y: 150},
-        {x: 140, y: 150},
-        {x: 130, y: 150}
+        {x: 350, y: 300},
+        {x: 330, y: 300},
+        {x: 310, y: 300},
+        {x: 290, y: 300}
     ];
 
     direction = "right";
+    nextDirection = "right";
 
     score = 0;
 
     document.getElementById("score").innerText =
-        "Score: " + score;
+        score;
 
-    createFood();
+    document.getElementById("gameOver").innerText = "";
 
-    clearInterval(gameLoop);
+    document.getElementById("restartButton").style.display =
+        "none";
 
-    gameLoop = setInterval(updateGame, 120);
+    createApple();
+
+    gameRunning = true;
+
+    draw();
+
+    gameLoop = setInterval(update, 100);
 }
 
 
-function updateGame() {
+function createApple() {
+
+    apple = {
+
+        x: Math.floor(
+            Math.random() * 34
+        ) * 20 + 10,
+
+        y: Math.floor(
+            Math.random() * 29
+        ) * 20 + 10
+    };
+}
+
+
+function update() {
+
+    if (!gameRunning) return;
+
+    direction = nextDirection;
 
     let head = {
         x: snake[0].x,
@@ -166,33 +253,33 @@ function updateGame() {
     };
 
 
-    if (direction === "up") {
-        head.y -= 10;
-    }
+    if (direction === "up")
+        head.y -= 20;
 
-    if (direction === "down") {
-        head.y += 10;
-    }
+    if (direction === "down")
+        head.y += 20;
 
-    if (direction === "left") {
-        head.x -= 10;
-    }
+    if (direction === "left")
+        head.x -= 20;
 
-    if (direction === "right") {
-        head.x += 10;
-    }
+    if (direction === "right")
+        head.x += 20;
 
+
+    // Wall collision
 
     if (
-        head.x < 0 ||
-        head.x >= canvas.width ||
-        head.y < 0 ||
-        head.y >= canvas.height
+        head.x < 10 ||
+        head.x > 670 ||
+        head.y < 10 ||
+        head.y > 570
     ) {
-        gameOver();
+        endGame();
         return;
     }
 
+
+    // Snake collision
 
     for (let part of snake) {
 
@@ -200,7 +287,7 @@ function updateGame() {
             head.x === part.x &&
             head.y === part.y
         ) {
-            gameOver();
+            endGame();
             return;
         }
     }
@@ -209,71 +296,230 @@ function updateGame() {
     snake.unshift(head);
 
 
+    // Apple
+
     if (
-        head.x === food.x &&
-        head.y === food.y
+        head.x === apple.x &&
+        head.y === apple.y
     ) {
 
         score++;
 
         document.getElementById("score").innerText =
-            "Score: " + score;
+            score;
 
-        createFood();
+        createApple();
 
     } else {
 
         snake.pop();
-
     }
 
 
-    drawGame();
+    draw();
 }
 
 
-function drawGame() {
+function draw() {
 
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Grass background
 
-
-    ctx.fillStyle = "lime";
-
-    for (let part of snake) {
-
-        ctx.fillRect(
-            part.x,
-            part.y,
-            10,
-            10
-        );
-    }
-
-
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "#294b24";
 
     ctx.fillRect(
-        food.x,
-        food.y,
-        10,
-        10
+        0,
+        0,
+        canvas.width,
+        canvas.height
     );
-}
 
 
-function createFood() {
+    // Small grass details
 
-    food = {
+    ctx.fillStyle = "#315d2c";
 
-        x: Math.floor(
-            Math.random() * 30
-        ) * 10,
+    for (let x = 0; x < canvas.width; x += 40) {
 
-        y: Math.floor(
-            Math.random() * 30
-        ) * 10
-    };
+        for (let y = 0; y < canvas.height; y += 40) {
+
+            ctx.fillRect(x, y, 2, 2);
+        }
+    }
+
+
+    // Apple shadow
+
+    ctx.beginPath();
+
+    ctx.fillStyle = "rgba(0,0,0,0.3)";
+
+    ctx.ellipse(
+        apple.x,
+        apple.y + 9,
+        13,
+        5,
+        0,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    // Apple
+
+    ctx.beginPath();
+
+    ctx.fillStyle = "#d71919";
+
+    ctx.arc(
+        apple.x - 5,
+        apple.y,
+        10,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.arc(
+        apple.x + 5,
+        apple.y,
+        10,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    // Apple shine
+
+    ctx.beginPath();
+
+    ctx.fillStyle = "#ff7777";
+
+    ctx.arc(
+        apple.x - 5,
+        apple.y - 5,
+        3,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    // Apple stem
+
+    ctx.strokeStyle = "#542d16";
+    ctx.lineWidth = 4;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        apple.x,
+        apple.y - 9
+    );
+
+    ctx.lineTo(
+        apple.x + 3,
+        apple.y - 18
+    );
+
+    ctx.stroke();
+
+
+    // Snake
+
+    for (let i = snake.length - 1; i >= 0; i--) {
+
+        let part = snake[i];
+
+        ctx.beginPath();
+
+        if (i === 0) {
+
+            // Snake head
+
+            ctx.fillStyle = "#3fc45b";
+
+            ctx.arc(
+                part.x,
+                part.y,
+                14,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+
+
+            // Eyes
+
+            ctx.fillStyle = "white";
+
+            ctx.beginPath();
+
+            ctx.arc(
+                part.x - 6,
+                part.y - 6,
+                4,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.arc(
+                part.x + 6,
+                part.y - 6,
+                4,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+
+
+            ctx.fillStyle = "black";
+
+            ctx.beginPath();
+
+            ctx.arc(
+                part.x - 6,
+                part.y - 6,
+                2,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.arc(
+                part.x + 6,
+                part.y - 6,
+                2,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+
+        } else {
+
+            // Snake body
+
+            ctx.fillStyle =
+                i % 2 === 0
+                ? "#36a94a"
+                : "#49c95c";
+
+            ctx.arc(
+                part.x,
+                part.y,
+                13,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+        }
+    }
 }
 
 
@@ -283,28 +529,28 @@ function changeDirection(newDirection) {
         newDirection === "up" &&
         direction !== "down"
     ) {
-        direction = "up";
+        nextDirection = "up";
     }
 
     if (
         newDirection === "down" &&
         direction !== "up"
     ) {
-        direction = "down";
+        nextDirection = "down";
     }
 
     if (
         newDirection === "left" &&
         direction !== "right"
     ) {
-        direction = "left";
+        nextDirection = "left";
     }
 
     if (
         newDirection === "right" &&
         direction !== "left"
     ) {
-        direction = "right";
+        nextDirection = "right";
     }
 }
 
@@ -313,42 +559,32 @@ document.addEventListener(
     "keydown",
     function(event) {
 
-        if (event.key === "ArrowUp") {
+        if (event.key === "ArrowUp")
             changeDirection("up");
-        }
 
-        if (event.key === "ArrowDown") {
+        if (event.key === "ArrowDown")
             changeDirection("down");
-        }
 
-        if (event.key === "ArrowLeft") {
+        if (event.key === "ArrowLeft")
             changeDirection("left");
-        }
 
-        if (event.key === "ArrowRight") {
+        if (event.key === "ArrowRight")
             changeDirection("right");
-        }
     }
 );
 
 
-function gameOver() {
+function endGame() {
+
+    gameRunning = false;
 
     clearInterval(gameLoop);
 
-    alert(
-        "💀 Game Over!\n\nYour Score: " + score
-    );
-}
+    document.getElementById("gameOver").innerText =
+        "💀 GAME OVER!";
 
-
-function backToMenu() {
-
-    clearInterval(gameLoop);
-
-    document.getElementById("game").style.display = "none";
-
-    document.getElementById("menu").style.display = "block";
+    document.getElementById("restartButton").style.display =
+        "inline-block";
 }
 
 </script>
